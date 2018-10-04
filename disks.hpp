@@ -71,6 +71,14 @@ public:
     std::swap(_colors[left_index], _colors[right_index]);
   }
 
+  // Swaps two indexes from the back to the front
+  void rev_swap(size_t right_index) {
+    assert(is_index(right_index));
+    auto left_index = right_index - 1;
+    assert(is_index(left_index));
+    std::swap(_colors[left_index], _colors[right_index]);
+  }
+
   std::string to_string() const {
     std::stringstream ss;
     bool first = true;
@@ -94,19 +102,36 @@ public:
   // that the first disk at index 0 is dark, the second disk at index 1
   // is light, and so on for the entire row of disks.
   bool is_alternating() const {
-    // TODO: Write code for this function, including rewriting the return
-    // statement, and then delete these comments.
-    return false;
+    // Checks to see if the first disk is dark
+    if(_colors[0] != DISK_DARK){
+      return false;
+    }
+    // Checks the list to see if there are any two disks with the color value
+    for(auto color : _colors){
+      if(_colors[color] == _colors[color+1]){
+        return false;
+      }
+    }
+    return true;
   }
 
   // Return true when this disk_state is fully sorted, with all light disks
   // on the left (low indices) and all dark disks on the right (high
   // indices).
   bool is_sorted() const {
-    // TODO: Write code for this function, including rewriting the return
-    // statement, and then delete these comments.
-    return false;
+    // Checks the first half of list for Light Disks
+    for(auto color : _colors.size_t/2){
+      if(color != DISK_LIGHT)){
+        return false;
+      }
+    }
+    // Checks the second half of the list for Dark Disks
+    for(auto color : _colors.size/2; color != _colors.end(); color++){
+      if(color != DISK_DARK){
+        return false;
+    }
   }
+  return true;
 };
 
 // Data structure for the output of the alternating disks problem. That
@@ -136,14 +161,35 @@ public:
 
 // Algorithm that sorts disks using the left-to-right algorithm.
 sorted_disks sort_left_to_right(const disk_state& before) {
-  // TODO: Write code for this function, including rewriting the return
-  // statement, and then delete these comments.
-  return sorted_disks(before, 0);
+  int swaps = 0;
+  for(int x = 0; x < before.total_count(); x++){
+    for(int i = x; i < before.total_count()-x; i++){
+      before.swap(i);
+      swaps++;
+    }
+  }
+  return sorted_disks(before, swaps);
 }
 
 // Algorithm that sorts disks using the lawnmower algorithm.
 sorted_disks sort_lawnmower(const disk_state& before) {
-  // TODO: Write code for this function, including rewriting the return
-  // statement, and then delete these comments.
-  return sorted_disks(before, 0);
+  int swaps = 0;
+  int front = 0;
+  int back = before.total_count();
+  while(front != back){
+    for(int i = front; i < back; i++){
+      before.swap(i);
+      swaps++;
+    }
+    front++;
+    back--;
+    for(int z = back; z > front; z--){
+      before.rev_swap(i);
+      swaps++
+    }
+    front++;
+    back--;
+  }
+
+  return sorted_disks(before, swaps);
 }
